@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | SmartBank AI</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="auth-page">
+  <div class="auth-shell">
+    <div class="auth-brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h1>SmartBank AI</h1>
+        <p>Administrator Portal</p>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-icon"><i class="fa-solid fa-user-shield"></i></div>
+      <h2>Admin Login</h2>
+      <p class="muted">Sign in to view prediction history and customer analytics.</p>
+
+      <form id="adminLoginForm">
+        <label>Username</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-user"></i>
+          <input id="username" type="text" value="admin" autocomplete="username" required>
+        </div>
+
+        <label>Password</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-lock"></i>
+          <input id="password" type="password" placeholder="Enter admin password" autocomplete="current-password" required>
+          <button type="button" class="eye-btn" onclick="togglePassword()"><i id="eyeIcon" class="fa-solid fa-eye"></i></button>
+        </div>
+
+        <button class="primary-btn full" type="submit">
+          <i class="fa-solid fa-right-to-bracket"></i> Login as Admin
+        </button>
+        <div id="loginStatus" class="status"></div>
+      </form>
+
+      <div class="demo-note">
+        <i class="fa-solid fa-circle-info"></i>
+        Demo login: <b>admin / admin</b>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_URL = "http://127.0.0.1:8001";
+
+function togglePassword() {
+  const input = document.getElementById("password");
+  const icon = document.getElementById("eyeIcon");
+  input.type = input.type === "password" ? "text" : "password";
+  icon.className = input.type === "password" ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
+}
+
+document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const status = document.getElementById("loginStatus");
+  status.className = "status";
+  status.textContent = "Checking credentials...";
+
+  try {
+    const res = await fetch(`${API_URL}/admin/login`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Login failed");
+
+    sessionStorage.setItem("adminLoggedIn", "true");
+    sessionStorage.setItem("adminUsername", document.getElementById("username").value.trim());
+    window.location.href = "admin-dashboard.html";
+  } catch (err) {
+    status.className = "status error";
+    status.textContent = err.message + " — Make sure FastAPI is running on port 8001.";
+  }
+});
+</script>
+</body>
+</html>

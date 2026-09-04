@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | SmartBank AI</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="side-brand">
+      <div class="brand-icon small"><i class="fa-solid fa-chart-line"></i></div>
+      <div><strong>SmartBank AI</strong><span>Admin Panel</span></div>
+    </div>
+
+    <nav class="side-nav">
+      <button class="nav-item active" data-section="overview"><i class="fa-solid fa-house"></i><span>Dashboard</span></button>
+      <button class="nav-item" data-section="credit"><i class="fa-solid fa-gauge-high"></i><span>Credit Score</span></button>
+      <button class="nav-item" data-section="loan"><i class="fa-solid fa-file-invoice-dollar"></i><span>Loan Default</span></button>
+      <button class="nav-item" data-section="fraud"><i class="fa-solid fa-shield-virus"></i><span>Fraud Detection</span></button>
+      <button class="nav-item" data-section="customer"><i class="fa-solid fa-users"></i><span>Customer Recommendation</span></button>
+      <button class="nav-item" data-section="contacts"><i class="fa-solid fa-envelope"></i><span>Contact / Support</span></button>
+      <button class="nav-item" data-section="all"><i class="fa-solid fa-clock-rotate-left"></i><span>All History</span></button>
+    </nav>
+
+    <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Admin Dashboard</h1>
+        <p id="pageSubtitle">Live information coming from FastAPI + PostgreSQL</p>
+      </div>
+      <div class="top-actions">
+        <span class="live-dot"><i></i> Live</span>
+        <button class="icon-btn" onclick="loadAllData()" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+        <div class="admin-user"><div class="avatar"><i class="fa-solid fa-user"></i></div><div><b id="adminName">Admin</b><small>Administrator</small></div></div>
+      </div>
+    </header>
+
+    <section id="overview" class="section active">
+      <div class="welcome-card">
+        <div><span class="eyebrow">SMARTBANK AI</span><h2>Welcome to Admin Control Center</h2><p>Monitor every prediction submitted through FastAPI. Values are read from PostgreSQL automatically.</p></div>
+        <button class="primary-btn" onclick="loadAllData()"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon blue"><i class="fa-solid fa-list-check"></i></div><div><span>Total Predictions</span><strong id="totalPredictions">0</strong><small>All AI modules</small></div></div>
+        <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-gauge-high"></i></div><div><span>Credit Predictions</span><strong id="totalCredits">0</strong><small>Credit score history</small></div></div>
+        <div class="stat-card"><div class="stat-icon orange"><i class="fa-solid fa-landmark"></i></div><div><span>Loan Evaluations</span><strong id="totalLoans">0</strong><small>Loan default history</small></div></div>
+        <div class="stat-card"><div class="stat-icon red"><i class="fa-solid fa-shield-virus"></i></div><div><span>Fraud Cases</span><strong id="totalFrauds">0</strong><small>Fraud detection history</small></div></div>
+        <div class="stat-card"><div class="stat-icon purple"><i class="fa-solid fa-user-group"></i></div><div><span>Customer Recommendations</span><strong id="totalCustomers">0</strong><small>Recommendation history</small></div></div>
+        <div class="stat-card"><div class="stat-icon pink"><i class="fa-solid fa-triangle-exclamation"></i></div><div><span>High Risk</span><strong id="highRisk">0</strong><small>Loan defaults + fraud</small></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><div><h3>Prediction Distribution</h3><p>Records stored in PostgreSQL</p></div></div>
+          <div class="bars">
+            <div class="bar-row"><span>Credit Score</span><div class="bar"><i id="barCredit"></i></div><b id="barCreditText">0</b></div>
+            <div class="bar-row"><span>Loan Default</span><div class="bar"><i id="barLoan"></i></div><b id="barLoanText">0</b></div>
+            <div class="bar-row"><span>Fraud Detection</span><div class="bar"><i id="barFraud"></i></div><b id="barFraudText">0</b></div>
+            <div class="bar-row"><span>Customer Recommendation</span><div class="bar"><i id="barCustomer"></i></div><b id="barCustomerText">0</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h3>System Status</h3><p>FastAPI service health</p></div></div>
+          <div id="healthBox" class="health-box"><span class="spinner"></span> Checking FastAPI...</div>
+          <div class="quick-list">
+            <div><i class="fa-solid fa-database"></i><span>Database</span><b>PostgreSQL</b></div>
+            <div><i class="fa-solid fa-brain"></i><span>ML Engine</span><b>Scikit-learn</b></div>
+            <div><i class="fa-solid fa-bolt"></i><span>API</span><b>FastAPI</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="credit" class="section">
+      <div class="section-heading"><div><h2>Credit Score History</h2><p>Every credit-score prediction submitted to FastAPI.</p></div></div>
+      <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Age</th><th>Gender</th><th>Annual Income</th><th>Employment</th><th>Monthly Income</th><th>Existing Loan</th><th>EMI</th><th>Utilization</th><th>Missed</th><th>Savings</th><th>Loan History</th><th>Predicted Score</th><th>Date</th></tr></thead><tbody id="creditBody"></tbody></table></div></div>
+    </section>
+
+    <section id="loan" class="section">
+      <div class="section-heading"><div><h2>Loan Default History</h2><p>Input values and AI prediction result from the loan model.</p></div></div>
+      <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Age</th><th>Income</th><th>Loan Amount</th><th>EMI</th><th>Employment</th><th>Credit Score</th><th>Previous Defaults</th><th>Debt / Income</th><th>Prediction</th><th>Date</th></tr></thead><tbody id="loanBody"></tbody></table></div></div>
+    </section>
+
+    <section id="fraud" class="section">
+      <div class="section-heading"><div><h2>Fraud Detection History</h2><p>Transaction inputs and fraud prediction history.</p></div></div>
+      <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Amount</th><th>Transaction Type</th><th>Location</th><th>Device</th><th>Hour</th><th>Merchant</th><th>International</th><th>Prediction</th><th>Date</th></tr></thead><tbody id="fraudBody"></tbody></table></div></div>
+    </section>
+
+    <section id="customer" class="section">
+      <div class="section-heading"><div><h2>Customer Recommendation History</h2><p>Customer values and recommended segment returned by the KNN model.</p></div></div>
+      <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Age</th><th>Income</th><th>Savings</th><th>Credit Score</th><th>Loan Amount</th><th>Spending Score</th><th>Recommended Segment</th><th>Date</th></tr></thead><tbody id="customerBody"></tbody></table></div></div>
+    </section>
+
+    <section id="contacts" class="section">
+      <div class="section-heading"><div><h2>Contact / Support History</h2><p>Messages submitted through the Contact page.</p></div></div>
+      <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Department</th><th>Message</th><th>Date</th></tr></thead><tbody id="contactBody"></tbody></table></div></div>
+    </section>
+
+    <section id="all" class="section">
+      <div class="section-heading"><div><h2>All Prediction History</h2><p>Combined view of Credit, Loan, Fraud and Customer Recommendation records.</p></div></div>
+      <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Module</th><th>ID</th><th>Main Input</th><th>Prediction / Result</th><th>Date</th></tr></thead><tbody id="allBody"></tbody></table></div></div>
+    </section>
+
+    <footer>SmartBank AI • Admin Dashboard • Data source: FastAPI → PostgreSQL</footer>
+  </main>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
